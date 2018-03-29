@@ -33,7 +33,7 @@ namespace Ausweichen
 
         public void Reset()
         {
-            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.BackgroundColor = ConsoleColor.Gray;
             Console.ForegroundColor = ConsoleColor.White;
         }
     }

@@ -24,8 +24,8 @@ namespace Ausweichen
         public void ConsoleSize()
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.SetWindowSize(120, 25);
-            Console.SetBufferSize(120, 25);
+            //Console.SetWindowSize(120, 25);
+            //Console.SetBufferSize(120, 25);
             DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_MINIMIZE, MF_BYCOMMAND);
             DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_MAXIMIZE, MF_BYCOMMAND);
             DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_SIZE, MF_BYCOMMAND);

@@ -6,17 +6,21 @@ namespace Ausweichen
 {
     class Program
     {
-        public char[,] grid { get; set; }
-        public static int playerPosX { get; set; }
-        public static int playerPosY { get; set; }
-        public static int oldPlayerPosX { get; set; }
-        public static int oldPlayerPosY { get; set; }
-        public static int amount { get; set; }
+        public static char[,] grid { get; set; }
+        public int playerPosX { get; set; }
+        public int playerPosY { get; set; }
+        public int oldPlayerPosX { get; set; }
+        public int oldPlayerPosY { get; set; }
+        public int amount = 1;
 
         static void Main(string[] args)
         {
-            Menu menu = new Menu();
+            ConsoleConf console = new ConsoleConf();
+            console.ConsoleSize();
+
             Program program = new Program();
+
+            Menu menu = new Menu();
             menu.PrintMenu();
 
             //Switch um abzufragen welche Taste gedrückt wird
@@ -38,31 +42,31 @@ namespace Ausweichen
         {
             //x is left & right
             //y is up & down
-            InitTimer();
             ConsoleConf confConsole = new ConsoleConf();
             Program program = new Program();
             confConsole.Reset();
-            program.grid = new char[29, 100]; 
-
+            grid = new char[29, 100];
+            InitTimer();
+            SpawnTimer();
             while (true)
             {
                 Console.Clear();
-                program.grid[oldPlayerPosX, oldPlayerPosY] = ' ';
-                program.grid[playerPosX, playerPosY] = '>';
-                GenerateRandomRange(amount);
-                for (int x = 0; x < program.grid.GetLength(0); x++)
+                grid[oldPlayerPosX, oldPlayerPosY] = ' ';
+                grid[playerPosX, playerPosY] = '>';
+
+                for (int x = 0; x < grid.GetLength(0); x++)
                 {
-                    for (int y = 0; y < program.grid.GetLength(1); y++)
+                    for (int y = 0; y < grid.GetLength(1); y++)
                     {
-                        if (program.grid[x, y] == '>')
+                        if (grid[x, y] == '>')
                         {
                             Console.BackgroundColor = ConsoleColor.Magenta;
-                            Console.Write(program.grid[x, y]);
+                            Console.Write(grid[x, y]);
                             confConsole.Reset();
                         }
                         else
                         {
-                            Console.Write(program.grid[x, y]);
+                            Console.Write(grid[x, y]);
                         }
                     }
                     Console.Write(System.Environment.NewLine);
@@ -92,28 +96,65 @@ namespace Ausweichen
         }
 
         Random rand = new Random();
-        public void GenerateRandomRange(int amount)
+        public int[] GenerateRandomRange(int amount)
         {
             int[] randNumbers = new int[amount];
             for(int i = 0; i < amount; i++)
             {
                 randNumbers[i] = rand.Next(0, 29);
             }
+            return randNumbers;
         }
 
         public void InitTimer()
         {
-            Timer t = new Timer(15000);
+            Timer t = new Timer(20000);
             t.AutoReset = true;
-            t.Elapsed += new System.Timers.ElapsedEventHandler(t_Elapsed);
+            t.Elapsed += new System.Timers.ElapsedEventHandler(increaseDifficulty);
             t.Start();
         }
 
-        private static void t_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        public void SpawnTimer()
         {
-            if (amount < 28)
+            Timer tspawn = new Timer(10000);
+            tspawn.AutoReset = true;
+            tspawn.Elapsed += new System.Timers.ElapsedEventHandler(SpawnEnemys);
+            tspawn.Start();
+        }
+
+        public void MoveEnemysTimer()
+        {
+            Timer tspawn = new Timer(3000);
+            tspawn.AutoReset = true;
+            tspawn.Elapsed += new System.Timers.ElapsedEventHandler(SpawnEnemys);
+            tspawn.Start();
+        }
+
+
+        private void increaseDifficulty(object sender, System.Timers.ElapsedEventArgs e) //Triggers every 15 seconds
+        {
+            if (amount < 28) //Erhöht die Anzahl der Gegner
                 amount += 1;
         }
 
+        public void SpawnEnemys(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Program program = new Program();
+            foreach (int Spawnpoint in GenerateRandomRange(amount))
+            {
+                grid[Spawnpoint, 99] = '5';
+            }
+
+            Random rng = new Random();
+            grid[rng.Next(0, 29), 99] = ' ';
+        }
+        public void MoveEnemys(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            for (int i = 0; i < 29; i++)
+            {
+                grid[i, 99 - 1] = grid[i, 99];
+                grid[i, 99] = ' ';
+            }
+        }
     }
 }
